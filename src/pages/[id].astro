@@ -7,8 +7,6 @@ const { id } = Astro.params
 
 let post = await retrievePost(id, {})
 
-console.log(post)
-
 export async function getStaticPaths() {
 	const posts = await listPosts({'_fields': 'id'}, 0)
 	return posts.map((post) => ({
