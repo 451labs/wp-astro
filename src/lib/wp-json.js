@@ -28,7 +28,7 @@ const HEADERS = new Headers({
 	'Content-Type': 'application/json' 
 })
 
-const CONTEXT = (typeof process.env.WP_USERNAME !== undefined) ? 'edit' : 'view'
+const CONTEXT = process.env.WP_USERNAME ? 'edit' : 'view'
 if ('edit' === CONTEXT) {
 	HEADERS.append('Authorization', 'Basic ' + Buffer.from(process.env.WP_USERNAME + ":" + process.env.WP_APPLICATION_PASSWORD, 'utf-8').toString('base64'))
 }
