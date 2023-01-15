@@ -1,3 +1,4 @@
+import Bottleneck from 'bottleneck'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -33,6 +34,11 @@ if ('edit' === CONTEXT) {
 	HEADERS.append('Authorization', 'Basic ' + Buffer.from(process.env.WP_USERNAME + ":" + process.env.WP_APPLICATION_PASSWORD, 'utf-8').toString('base64'))
 }
 
+const LIMITER = new Bottleneck({
+	maxConcurrent: parseInt(process.env.WP_MAX_CONCURRENT, 10) ?? 50,
+	minTime: parseInt(process.env.WP_MIN_TIME, 10) ?? 200
+})
+
 async function wpList(resource, params={}, limit=PAGE_SIZE) { // default to one page
 	const url = new URL(resource, API_BASE)
 	const per_page = limit > 0 && limit < PAGE_SIZE ? limit : PAGE_SIZE
@@ -42,7 +48,7 @@ async function wpList(resource, params={}, limit=PAGE_SIZE) { // default to one 
 
 	console.info('wp-json: LIST', url.href)
 		
-	const response = await fetch(url, { 'headers': HEADERS })
+	const response = await LIMITER.schedule(() => fetch(url, { 'headers': HEADERS }))
 	const json = await response.json()
 	if (json.errors) {
 		console.error(json.errors)
@@ -63,7 +69,7 @@ async function wpList(resource, params={}, limit=PAGE_SIZE) { // default to one 
 		
 		console.info('wp-json: LIST', url.href)
 		
-		const response = await fetch(url, { 'headers': HEADERS }) // block scope
+		const response = await LIMITER.schedule(() => fetch(url, { 'headers': HEADERS }))
 		const next = await response.json()
 		if (next.errors) {
 			console.error(next.errors)
@@ -84,7 +90,7 @@ async function wpRetrieve(resource, params={}) {
 	
 	console.info('wp-json: RETRIEVE', url.href)
 	
-	const response = await fetch(url, { 'headers': HEADERS })
+	const response = await LIMITER.schedule(() => fetch(url, { 'headers': HEADERS }))
 	const json = await response.json()
 	if (json.errors) {
 		console.error(json.errors)
