@@ -36,13 +36,13 @@ if ('edit' === CONTEXT) {
 async function wpList(resource, params={}, limit=PAGE_SIZE) { // default to one page
 	const url = new URL(resource, API_BASE)
 	const per_page = limit > 0 && limit < PAGE_SIZE ? limit : PAGE_SIZE
-	for (const [name, value] of Object.entries({ context: CONTEXT, per_page, ...params })) {
+	for (const [name, value] of Object.entries({ 'context': CONTEXT, per_page, ...params })) {
 		url.searchParams.set(name, value)
 	}
 
 	console.info('wp-json: LIST', url.href)
 		
-	const response = await fetch(url, { headers: HEADERS })
+	const response = await fetch(url, { 'headers': HEADERS })
 	const json = await response.json()
 	if (json.errors) {
 		console.error(json.errors)
@@ -63,7 +63,7 @@ async function wpList(resource, params={}, limit=PAGE_SIZE) { // default to one 
 		
 		console.info('wp-json: LIST', url.href)
 		
-		const response = await fetch(url, { headers: HEADERS }) // block scope
+		const response = await fetch(url, { 'headers': HEADERS }) // block scope
 		const next = await response.json()
 		if (next.errors) {
 			console.error(next.errors)
@@ -78,13 +78,13 @@ async function wpList(resource, params={}, limit=PAGE_SIZE) { // default to one 
 
 async function wpRetrieve(resource, params={}) {
 	const url = new URL(resource, API_BASE)
-	for (const [name, value] of Object.entries({ context: CONTEXT, ...params })) {
+	for (const [name, value] of Object.entries({ 'context': CONTEXT, ...params })) {
 		url.searchParams.set(name, value)
 	}
 	
 	console.info('wp-json: RETRIEVE', url.href)
 	
-	const response = await fetch(url, { headers: HEADERS })
+	const response = await fetch(url, { 'headers': HEADERS })
 	const json = await response.json()
 	if (json.errors) {
 		console.error(json.errors)
