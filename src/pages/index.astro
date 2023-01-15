@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro'
 import Card from '../components/Card.astro'
 
 import { listPosts } from '../lib/wp-json'
-let posts = await listPosts({'_fields': 'id,title'}, 10)
+let posts = await listPosts({'_fields': 'id,title,excerpt'}, 10)
 ---
 
 <Layout title="Welcome to WP-Astro.">
@@ -19,7 +19,7 @@ let posts = await listPosts({'_fields': 'id,title'}, 10)
 				<Card
 					href={`/${post.id}`}
 					title={post.title.rendered}
-					body=""
+					body={post.excerpt.raw}
 				/>
 			))
 		}
