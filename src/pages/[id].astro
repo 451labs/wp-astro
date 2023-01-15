@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+import { listPosts, retrievePost } from '../lib/wp-json'
+
+const { id } = Astro.params
+
+let post = await retrievePost(id, {})
+
+console.log(post)
+
+export async function getStaticPaths() {
+	const posts = await listPosts({'_fields': 'id'}, 0)
+	return posts.map((post) => ({
+		params: { id: post.id },
+		props: { post },
+	}))	
+}
+---
+
+<Layout title="Welcome to WP-Astro.">
+	<main>
+		<h1><span class="text-gradient">{post.title.rendered}</span></h1>
+		<Fragment set:html={post.content.rendered} />
+	</main>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1.5rem;
+		max-width: 60ch;
+	}
+	h1 {
+		font-size: 3rem;
+		font-weight: 800;
+		margin: 0;
+	}
+	.text-gradient {
+		background-image: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-size: 400%;
+		background-position: 0%;
+	}
+</style>
